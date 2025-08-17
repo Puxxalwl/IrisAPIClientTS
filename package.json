@@ -1,0 +1,38 @@
+{
+  "name": "irisapiclientts",
+  "version": "1.0.1",
+  "description": "Асинхронная библиотека для работы с API Iris | Чат-Менеджер'а в Telegram",
+  "keywords": [
+    "Iris-API",
+    "Iris",
+    "Api",
+    "library"
+  ],
+  "homepage": "https://github.com/puxxalwl/irisapiclientts#readme",
+  "bugs": {
+    "url": "https://github.com/puxxalwl/irisapiclientts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puxxalwl/irisapiclientts.git"
+  },
+  "license": "MIT",
+  "author": "Puxxalwl",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"No tests specified\""
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "winston": "^3.17.0"
+  }
+}
