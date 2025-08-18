@@ -12,11 +12,24 @@ export interface ApiErrorResponse {
 export class HttpClientExtensions {
   private client: AxiosInstance;
 
-  constructor(IrisUrl?: string, token?: string) {
-    this.client = axios.create({
-      baseURL: IrisUrl,
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined
-    });
+  constructor(proxyStatus?: boolean, proxyUrl?: string) {
+    const config: any = {};
+
+    if (proxyStatus && proxyUrl) {
+      const url = new URL(proxyUrl);
+      config.proxy = {
+        host: url.hostname,
+        port: Number(url.port),
+        auth: url.username
+          ? {
+              username: url.username,
+              password: url.password
+            }
+          : undefined
+      };
+    }
+
+    this.client = axios.create(config);
   }
 
   async getWithRetry<T>(url: string, params?: Record<string, unknown>, maxRetries: number = 3): Promise<T> {

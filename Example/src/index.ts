@@ -1,46 +1,69 @@
-// TypeScript example
+import { IrisApiClient } from "irisapiclientts"; // JavaScript: const { IrisApiClient } = require("irisapiclientts")
 
-import { IrisApiClient } from "irisapiclientts";
+/*
+ * env: boolean — true = брать настройки из .env, false = из .json (по умолчанию IrisSettings.json)
+ * proxyStatus: boolean — использовать ли прокси.
+ *                       Для Json-конфига указать поле proxyUrl.
+ *                       Для .env — переменную PROXY_URL.
+ */
+const IrisClient = IrisApiClient.create({ env: true, proxyStatus: true });
 
-const IrisClient = IrisApiClient.create(undefined, true); // configPath используется когда данные берутся с конфига .json по умолчанию IrisSettings.json, но если использовать env нужно передать undefined м env true
+// Пример ручной инициализации
+// const config = {
+//     IrisUrl: "https://iris-tg.ru/api",
+//     botId: "123456789",
+//     IrisToken: "123456789:Abv",
+//     proxyStatus: true,
+//     proxyUrl: "http://127.0.0.1:8080" // proxyUrl указывать необязательно, если proxyStatus = false
+// }
+// const IrisClient = new IrisApiClient({
+//     config,
+//     proxyStatus: true
+// })
 
 // Запуск: npm run start
 
-function delay (ms:number) {
-    return new Promise(resolve=> setTimeout(resolve, ms))
+function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-(async() => {
+(async () => {
     try {
-        const balance = await IrisClient.getBalance(); // Получить баланс
-        console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`)
-        await delay(5000)
+        // Получение баланса
+        const balance = await IrisClient.getBalance();
+        console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`);
+        await delay(5000);
 
+        // Перевод ирисок
         const giveSweetsResult = await IrisClient.giveSweets(
             6984952764,
             10.5,
-            true,
-            "За такую прекрасную библиотеку"
-        ) // Перевод ирисок
+            {
+                comment: "За такую прекрасную библиотеку", // комментарий к переводу (по умолчанию "")
+                withoutDonateScore: true // учитывать ли очки доната (по умолчанию true)
+            }
+        );
         if (giveSweetsResult && giveSweetsResult.result) {
-            console.log(`Перевод успешен\nкому: ${giveSweetsResult.history.forEach(h => { h.to_user_id })}`);
+            console.log(`Перевод успешен\nкому: ${giveSweetsResult.history.forEach(h =>  { h.to_user_id;})}`);
         } else {
-            console.log(`Перевод не удался по неизвестной причине`)
+            console.log(`Перевод не удался по неизвестной причине`);
         }
-        await delay(5000)
+        await delay(5000);
 
-        const openBagResult = await IrisClient.openBag(true); // status:boolean открыть либо закрыть мешок
-        console.log(`Ответ Iris API: ${openBagResult.result}`)
-        await delay(5000)
+        // Открыть/закрыть мешок
+        const openBagResult = await IrisClient.openBag(true); // true = открыть, false = закрыть
+        console.log(`Ответ Iris API: ${openBagResult.result}`);
+        await delay(5000);
 
-        const allowAllResult = await IrisClient.allowAll(true) // status:boolean разрешить либо запретить всем переводы
-        console.log(`Ответ Iris API: ${allowAllResult.result}`)
-        await delay(5000)
+        // Разрешить/запретить переводы для всех
+        const allowAllResult = await IrisClient.allowAll(true); // true = разрешить, false = запретить
+        console.log(`Ответ Iris API: ${allowAllResult.result}`);
+        await delay(5000);
 
-        const alloUserResult = await IrisClient.allowUser(true, 123456789)
-        console.log(`Ответ Iris API:${alloUserResult.result}`)
-    } catch (err:any) {
-        console.log(`Произошла неизвестная ошибка ${err.message}`)
+        // Разрешить/запретить переводы конкретному пользователю
+        const allowUserResult = await IrisClient.allowUser(true, 123456789);
+        console.log(`Ответ Iris API: ${allowUserResult.result}`);
+    } catch (err: any) {
+        console.log(`Произошла ошибка: ${err.message}`);
     }
-    
-})
+})();

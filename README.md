@@ -1,14 +1,22 @@
-# IrisApiClient — асинхронный клиент для работы с API Iris | Чат-менеджер'а в Telegram на TypeScript/JavaScript
+# IrisAPIClientTS — асинхронный клиент для работы с API Iris | Чат-менеджер'а в Telegram на TypeScript/JavaScript, поддерживающий загрузку настроек из `.env` или `IrisSettings.json`, а также работу через прокси.
+
 ### (Документация и библиотека не полностью готовы)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ---
 
-## Оглавление
+---
+
+## 📑 Оглавление
 1. [Установка](#установка)  
 2. [Конфигурация](#конфигурация)  
+   - [Через JSON](#через-json)  
+   - [Через .env](#через-env)  
+   - [Настройка прокси](#настройка-прокси)  
 3. [Быстрый старт](#быстрый-старт)  
+   - [Авто-загрузка конфига](#авто-загрузка-конфига)  
+   - [Ручная конфигурация](#ручная-конфигурация)  
 4. [Методы клиента](#методы-клиента)  
    - [getBalance](#getbalance)  
    - [giveSweets](#givesweets)  
@@ -20,62 +28,83 @@
 
 ---
 
-## Установка
-
-Установка пакета через npm:
+## 📦 Установка
 
 ```bash
-npm i IrisAPIClientTS
+npm i irisapiclientts
 ```
 
 ---
 
 ## Конфигурация
 
-Создайте файл **IrisSettings.json** в корне проекта:
+### Через JSON
+Создайте файл `IrisSettings.json` в **корне проекта**:
 
 ```JSON
 {
-  "IrisApi": {
-    "IrisUrl": "https://iris-tg.ru/api",
-    "botId": "ID_бота",
-    "IrisToken": "Iris-Token (получается у @irisism)"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning"
-    }
-  }
+  "IrisUrl": "https://iris-tg.ru/api",
+  "botId": "ID_бота",
+  "IrisToken": "Iris-Token (получается у @irisism)",
+  "proxyUrl": "Proxy"
 }
 ```
-Или же используйте **.env** передав undefined для `configPath` и true для `env` c параметрами в .env `IRIS_BOT_ID` и `IRIS_TOKEN` при создании клиента через **create()** 
+
+### Через .env
+Создайте файл `.env`:
+
+```ENV
+IRIS_URL=https://iris-tg.ru/api
+IRIS_BOT_ID=ID_бота
+IRIS_TOKEN=Iris-Token
+PROXY_URL=Proxy
+```
+
+Затем при инициализации передайте `env`: **true**:
+
+```TypeScript
+const client = IrisApiClient.create({ env: true, proxyStatus: true });
+```
+---
+
+### Настройка прокси
+
+# Для работы с прокси:
+- Если используете JSON-конфиг, укажите "proxyUrl".
+- Если `.env`, добавьте переменную `PROXY_URL`.
+- В обоих случаях установите proxyStatus: true при создании клиента.
 
 ---
 
-### Быстрый старт
+## Быстрый старт
 
-TypeScript:
+### Авто-загрузка конфига:
+
 ```TypeScript
 import { IrisApiClient } from "irisapiclientts";
 
-const client = IrisApiClient.create(undefined, true); // configPath используется когда данные берутся с конфига .json по умолчанию IrisSettings.json, но если использовать env нужно передать undefined и env true
+const IrisClient = IrisApiClient.create({ env: true, proxyStatus: true });
 
-const balance = await client.getBalance()
-console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`)
-
+const balance = await IrisClient.getBalance();
+console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`);
 ```
 
-JavaScript:
-```JavaScript
-const { IrisApiClient } = require("irisapiclientts");
+---
 
-const client = IrisApiClient.create(undefined, true); // configPath используется когда данные берутся с конфига .json по умолчанию IrisSettings.json, но если использовать env нужно передать undefined и env true
+### Ручная конфигурация:
 
-const balance = await client.getBalance()
-console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`)
-
-
+```TypeScript
+const config = {
+    IrisUrl: "https://iris-tg.ru/api",
+    botId: "123456789",
+    IrisToken: "123456789:Abv",
+    proxyStatus: true,
+    proxyUrl: "Proxy"
+}
+const IrisClient = new IrisApiClient({
+    config,
+    proxyStatus: true
+});
 ```
 
 ---
@@ -83,77 +112,66 @@ console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.g
 ## Методы клиента
 
 ### getBalance
-
-Получение текущего баланса.
+Получение текущего баланса:
 
 ```TypeScript
 const balance = await client.getBalance();
-console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`)
+console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.gold} ирис-голд, ${balance.donate_score} очков доната`);
 ```
-
 ---
 
 ### giveSweets
-
-Передача ирисок другому пользователю.
+Передача ирисок пользователю:
 
 ```TypeScript
-const giveSweetsResult = await IrisClient.giveSweets(
-    6984952764, // userId:long — индификатор пользователя в тг
-    10.5, // sweets:number — кол-во передаваемых ирисок
-    true, // withoutScoreDonate:boolean что-то там
-    "За такую прекрасную библиотеку" // comment:string (по умолчанию пусто) комментарий к переводу 
-)
+const giveSweetsResult = await client.giveSweets(
+    6984952764, // userId — тг ид кому отправляете
+    10.5, // sweets — количество
+    {
+      comment: "За такую прекрасную библиотеку",
+      withoutDonateScore: true
+    }
+);
+
 if (giveSweetsResult && giveSweetsResult.result) {
     console.log(`Перевод успешен\nкому: ${giveSweetsResult.history.forEach(h => { h.to_user_id })}`);
 } else {
-    console.log(`Перевод не удался по неизвестной причине`)
+    console.log(`Перевод не удался по неизвестной причине`);
 }
 ```
-
 ---
 
 ### openBag
-
-Открытие или закрытие мешка для переводов.
+Открытие или закрытие мешка:
 
 ```TypeScript
 await client.openBag(true);  // открыть
 await client.openBag(false); // закрыть
 ```
-
-
 ---
 
 ### allowAll
-
-Разрешить или запретить переводы для всех.
+Разрешить или запретить переводы всем:
 
 ```TypeScript
 await client.allowAll(true);  // разрешить
 await client.allowAll(false); // запретить
 ```
-
-
 ---
 
 ### allowUser
-
-Разрешить или запретить переводы для конкретного пользователя.
+Разрешить или запретить переводы конкретному пользователю:
 
 ```TypeScript
 await client.allowUser(true, 123456789);  // разрешить
 await client.allowUser(false, 123456789); // запретить
 ```
-
 ---
 
 ### Обработка ошибок
-
-Все запросы используют функцию `getWithRetry`, которое сразу выдает ошибки
+Все запросы используют функцию `getWithRetry`, которая сразу выбрасывает ошибки.
 
 ---
 
-### Контакты
-
-Я есть лишь в **Telegram** и только с username: @puxalwl (ID: 6984952764)
+Контакты
+Я есть только в Telegram: `@puxalwl` (ID: 6984952764)

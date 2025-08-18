@@ -5,23 +5,41 @@ import { Balance, Result, SweetsFull } from "../Models/Types";
 import { ILoggerService } from "./iLoggerService";
 import { LoggerService } from "./LoggerService";
 
+interface InitClientOptions{
+    config:IrisConfig,
+    proxyStatus?:boolean
+}
+
+interface CreateOptions {
+    env?:boolean,
+    configPath?:string,
+    proxyStatus?:boolean
+}
+
+interface giveSweetsOptions {
+    comment?:string, 
+    withoutDonateScore?:boolean
+}
+
 export class IrisApiClient {
     private readonly config: IrisConfig;
     private readonly logger: ILoggerService;
     private readonly irisUrl: string;
     private readonly _httpClient:HttpClientExtensions
 
-    constructor(config: IrisConfig, logger: ILoggerService) {
-        this.config = config;
-        this.logger = logger;
-        this.irisUrl = `${this.config.IrisApi.IrisUrl}/${this.config.IrisApi.botId}_${this.config.IrisApi.IrisToken}`;
-        this._httpClient = new HttpClientExtensions()
+    constructor(Options:InitClientOptions) {
+        this.config = Options.config;
+        this.logger = new LoggerService();
+        this.irisUrl = `${this.config.IrisUrl}/${this.config.botId}_${this.config.IrisToken}`;
+        this._httpClient = new HttpClientExtensions(
+            this.config.proxyStatus,
+            this.config.proxyStatus ? this.config.proxyUrl : undefined
+        );
     }
 
-    static create(configPath = "IrisSettings.json", env:boolean = false): IrisApiClient {
-        const config = IrisConfig.LoadFrom(configPath, env);
-        const logger = new LoggerService();
-        return new IrisApiClient(config, logger);
+    static create(Options:CreateOptions): IrisApiClient {
+        const config = IrisConfig.LoadFrom(Options.env, Options.configPath, Options.proxyStatus);
+        return new IrisApiClient({ config });
     }
 
     async getBalance(): Promise<Balance> {
@@ -34,18 +52,18 @@ export class IrisApiClient {
         }
     }
 
-    async giveSweets(userId: number, sweets: number, withoutDonateScore: boolean, comment = ""): Promise<SweetsFull | null> {
+    async giveSweets(userId: number, sweets: number, Options?:giveSweetsOptions): Promise<SweetsFull | null> {
         try {
             const url = `${this.irisUrl}${ApiConstants.GiveSweets}`;
             const params = {
                 sweets,
                 user_id: userId,
-                comment,
-                without_donate_score: withoutDonateScore
+                comment:Options?.comment ?? "",
+                without_donate_score: Options?.withoutDonateScore ?? true
             };
 
             const result = await this._httpClient.getWithRetry<SweetsFull>(url, params);
-            if (result.result !== "ok") return null;
+            if (!result.result) return null;
             return result;
         } catch (err: any) {
             this.logger.logError(`Ошибка перевода ирисок: ${err.message}`, err);
