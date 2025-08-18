@@ -99,10 +99,10 @@ console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.g
 
 ```TypeScript
 const giveSweetsResult = await IrisClient.giveSweets(
-    6984952764,
-    10.5,
-    true,
-    "За такую прекрасную библиотеку"
+    6984952764, // userId:long — индификатор пользователя в тг
+    10.5, // sweets:number — кол-во передаваемых ирисок
+    true, // withoutScoreDonate:boolean что-то там
+    "За такую прекрасную библиотеку" // comment:string (по умолчанию пусто) комментарий к переводу 
 )
 if (giveSweetsResult && giveSweetsResult.result) {
     console.log(`Перевод успешен\nкому: ${giveSweetsResult.history.forEach(h => { h.to_user_id })}`);
