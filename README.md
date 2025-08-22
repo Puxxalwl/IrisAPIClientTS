@@ -1,6 +1,5 @@
 # IrisAPIClientTS — асинхронный клиент для работы с API Iris | Чат-менеджер'а в Telegram на TypeScript/JavaScript, поддерживающий загрузку настроек из `.env` или `IrisSettings.json`, а также работу через прокси.
 
-### (Документация и библиотека не полностью готовы)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -178,6 +177,12 @@ await client.allowUser(false, 123456789); // запретить
 
 ```TypeScript
 const ResultSweetsHistory = await client.getSweetsHistory(0) // offset, если указывать offset+1 то будет как аналог long-polling для получения уведомлений о переводе
+
+if (ResultSweetsHistory.length === 0) {
+    console.log("История отсутствует")
+    return
+}
+
 for (const result of ResultSweetsHistory) {
     const date = result.date / 1000;
     const TimeString = new Date(date).ToLocaleString();
@@ -201,6 +206,11 @@ for (const result of ResultSweetsHistory) {
 
 ```TypeScript
 const ResultGoldHistory = await client.getGoldHistory(0) // offset, если указывать offset+1 то будет как аналог long-polling для получения уведомлений о переводе
+
+if (ResultGoldHistory.length === 0) {
+    console.log("История отсутствует")
+    return
+}
 
 for (const result of ResultGoldHistory) {
     const date = result.date / 1000;
