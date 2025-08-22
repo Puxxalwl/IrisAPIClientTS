@@ -22,7 +22,9 @@
    - [giveSweets](#givesweets)  
    - [openBag](#openbag)  
    - [allowAll](#allowall)  
-   - [allowUser](#allowuser)  
+   - [allowUser](#allowuser)
+   - [getSweetsHistory](#getsweetshistory)
+   - [getGoldHistory](#getgoldhistory)
 5. [Обработка ошибок](#обработка-ошибок)  
 6. [Контакты](#контакты)  
 
@@ -219,8 +221,10 @@ for (const result of ResultGoldHistory) {
 ---
 
 ### Обработка ошибок
+
 Все запросы используют функцию `getWithRetry`, которая сразу выбрасывает ошибки.
 ---
 
-Контакты
+### Контакты
+
 Я есть только в Telegram: `@puxalwl` (ID: 6984952764)
