@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 
 export interface IrisAPIConfig {
+    IrisVersion: string;
     IrisUrl: string;
     botId: string;
     IrisToken: string;
@@ -11,6 +12,7 @@ export interface IrisAPIConfig {
 }
 
 export class IrisConfig {
+    public readonly IrisVersion: string;
     public readonly IrisUrl: string;
     public readonly botId: string;
     public readonly IrisToken: string;
@@ -18,6 +20,7 @@ export class IrisConfig {
     public readonly proxyUrl?: string;
 
     private constructor(config: IrisAPIConfig) {
+        this.IrisVersion = config.IrisVersion ?? "100";
         this.IrisUrl = config.IrisUrl ?? "https://iris-tg.ru/api";
         this.botId = config.botId;
         this.IrisToken= config.IrisToken;
@@ -26,6 +29,7 @@ export class IrisConfig {
     }
 
     static LoadFrom(env: boolean = false, configPath?:string, setProxyStatus?:boolean): IrisConfig {
+        let IrisVersion:string
         let IrisUrl:string;
         let botId:string;
         let IrisToken:string;
@@ -34,6 +38,7 @@ export class IrisConfig {
 
 
         if (env) {
+            IrisVersion = process.env.IRIS_VERSION ?? "100"
             IrisUrl = process.env.IRIS_URL ?? "https://iris-tg.ru/api"
             botId = process.env.IRIS_BOT_ID ?? ""
             IrisToken= process.env.IRIS_TOKEN ?? ""
@@ -56,16 +61,12 @@ export class IrisConfig {
             const raw = fs.readFileSync(fullPath, "utf-8");
             const parse = JSON.parse(raw);
 
-            if (!parse.IrisApi) {
-                throw new Error(`В конфиге ${configPath} отсутствует IrisApi`);
-            }
-
-            
+            IrisVersion = parse.IrisVersion ?? "100"
             IrisUrl = parse.IrisUrl ?? "https://iris-tg.ru/api";
             botId = parse.botId;
             IrisToken = parse.IrisToken;
             proxyStatus = parse.proxyStatus;
-            proxyUrl = parse.IrisApi.proxyUrl ??undefined
+            proxyUrl = parse.proxyUrl ??undefined
             
             if (!botId || !IrisToken) {
                 throw new Error(`В конфиге ${configPath} отсутствуют параметры botId и IrisToken`);
@@ -75,6 +76,6 @@ export class IrisConfig {
             }
         }
 
-        return new IrisConfig({IrisUrl, IrisToken, botId, proxyStatus, proxyUrl});
+        return new IrisConfig({IrisVersion,IrisUrl, IrisToken, botId, proxyStatus, proxyUrl});
     }
 }

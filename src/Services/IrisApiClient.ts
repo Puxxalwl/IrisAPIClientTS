@@ -1,7 +1,7 @@
 import { IrisConfig } from "../Config/IrisConfig";
 import { ApiConstants } from "../Consts/ApiConsts";
 import { HttpClientExtensions } from "../Extensions/HttpClientExtensions";
-import { Balance, Result, SweetsFull } from "../Models/Types";
+import { Balance, History, Result } from "../Models/Types";
 import { ILoggerService } from "./iLoggerService";
 import { LoggerService } from "./LoggerService";
 
@@ -30,7 +30,7 @@ export class IrisApiClient {
     constructor(Options:InitClientOptions) {
         this.config = Options.config;
         this.logger = new LoggerService();
-        this.irisUrl = `${this.config.IrisUrl}/${this.config.botId}_${this.config.IrisToken}`;
+        this.irisUrl = `${this.config.IrisUrl}/${this.config.botId}_${this.config.IrisToken}/v${this.config.IrisVersion}`;
         this._httpClient = new HttpClientExtensions(
             this.config.proxyStatus,
             this.config.proxyStatus ? this.config.proxyUrl : undefined
@@ -52,7 +52,7 @@ export class IrisApiClient {
         }
     }
 
-    async giveSweets(userId: number, sweets: number, Options?:giveSweetsOptions): Promise<SweetsFull | null> {
+    async giveSweets(userId: number, sweets: number, Options?:giveSweetsOptions): Promise<Result | null> {
         try {
             const url = `${this.irisUrl}${ApiConstants.GiveSweets}`;
             const params = {
@@ -62,7 +62,7 @@ export class IrisApiClient {
                 without_donate_score: Options?.withoutDonateScore ?? true
             };
 
-            const result = await this._httpClient.getWithRetry<SweetsFull>(url, params);
+            const result = await this._httpClient.getWithRetry<Result>(url, params);
             if (!result.result) return null;
             return result;
         } catch (err: any) {
@@ -98,6 +98,28 @@ export class IrisApiClient {
             return await this._httpClient.getWithRetry<Result>(url, params);
         } catch (err: any) {
             this.logger.logError(`Ошибка при изменении статуса переводов для пользователя (userId: ${userId}): ${err.message}`, err);
+            throw err;
+        }
+    }
+
+    async getSweetsHistory(offset:number = 0):Promise<History[]> {
+        try {
+            const url = `${this.irisUrl}/${ApiConstants.SweetsHistory}`
+            const params = {offset:offset};
+            return await this._httpClient.getWithRetry<History[]>(url,params);
+        } catch(err:any){
+            this.logger.logError(`Ошибка получения истории ирисок: ${err.message}`, err);
+            throw err;
+        }
+    }
+
+    async getGoldHistory(offset:number = 0):Promise<History[]> {
+        try {
+            const url = `${this.irisUrl}/${ApiConstants.SweetsHistory}`
+            const params = {offset:offset};
+            return await this._httpClient.getWithRetry<History[]>(url,params);
+        } catch(err:any){
+            this.logger.logError(`Ошибка получения истории ирис-голд: ${err.message}`, err);
             throw err;
         }
     }

@@ -43,6 +43,7 @@ npm i irisapiclientts
 
 ```JSON
 {
+  "IrisVersion": "100  
   "IrisUrl": "https://iris-tg.ru/api",
   "botId": "ID_бота",
   "IrisToken": "Iris-Token (получается у @irisism)",
@@ -53,7 +54,8 @@ npm i irisapiclientts
 ### Через .env
 Создайте файл `.env`:
 
-```ENV
+```shell
+IRIS_VERSION=100
 IRIS_URL=https://iris-tg.ru/api
 IRIS_BOT_ID=ID_бота
 IRIS_TOKEN=Iris-Token
@@ -95,6 +97,7 @@ console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.g
 
 ```TypeScript
 const config = {
+    IrisVersion:"100" // Версия для работы с Iris API, можно указать 100 для получение актуальной версии
     IrisUrl: "https://iris-tg.ru/api",
     botId: "123456789",
     IrisToken: "123456789:Abv",
@@ -168,9 +171,55 @@ await client.allowUser(false, 123456789); // запретить
 ```
 ---
 
+### getSweetsHistory
+Получить историю путишествий ирисок
+
+```TypeScript
+const ResultSweetsHistory = await client.getSweetsHistory(0) // offset, если указывать offset+1 то будет как аналог long-polling для получения уведомлений о переводе
+for (const result of ResultSweetsHistory) {
+    const date = result.date / 1000;
+    const TimeString = new Date(date).ToLocaleString();
+
+    console.log(
+        `История путишествий ирисок ((${ResultSweetsHistory.length} записей)):\n\n` +
+        `Дата операции: ${TimeString}\n` + 
+        `Количество: ${result.amount}\n` +
+        `Исходный баланс: ${result.balance}\n` +
+        `Пользователь: ${result.to_user_id}\n` +
+        `ID операции: ${result.id}\n` + 
+        `Тип операции: ${result.type == "take" ? "получение" : "перевод"}\n` +
+        `Коммисия: ${result.info.commision}`
+    )
+}
+```
+---
+
+### getGoldHistory
+Получить историю путишествий ирис-голд
+
+```TypeScript
+const ResultGoldHistory = await client.getGoldHistory(0) // offset, если указывать offset+1 то будет как аналог long-polling для получения уведомлений о переводе
+
+for (const result of ResultGoldHistory) {
+    const date = result.date / 1000;
+    const TimeString = new Date(date).ToLocaleString();
+
+    console.log(
+        `История путишествий ирисок (${ResultGoldHistory.length} записей):\n\n` +
+        `Дата операции: ${TimeString}\n` + 
+        `Количество: ${result.amount}\n` +
+        `Исходный баланс: ${result.balance}\n` +
+        `Пользователь: ${result.to_user_id}\n` +
+        `ID операции: ${result.id}\n` + 
+        `Тип операции: ${result.type == "take" ? "получение" : "перевод"}\n` +
+        `Коммисия: ${result.info.commision}`
+    )
+}
+```
+---
+
 ### Обработка ошибок
 Все запросы используют функцию `getWithRetry`, которая сразу выбрасывает ошибки.
-
 ---
 
 Контакты
