@@ -3,6 +3,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+
+# Support exclusively: Iris API v0.2
 ---
 
 ---
@@ -24,6 +26,7 @@
    - [allowUser](#allowuser)
    - [getSweetsHistory](#getsweetshistory)
    - [getGoldHistory](#getgoldhistory)
+   - [getUpdates](#getupdates)
 5. [Обработка ошибок](#обработка-ошибок)  
 6. [Контакты](#контакты)  
 
@@ -44,7 +47,6 @@ npm i irisapiclientts
 
 ```JSON
 {
-  "IrisVersion": "100  
   "IrisUrl": "https://iris-tg.ru/api",
   "botId": "ID_бота",
   "IrisToken": "Iris-Token (получается у @irisism)",
@@ -56,7 +58,6 @@ npm i irisapiclientts
 Создайте файл `.env`:
 
 ```shell
-IRIS_VERSION=100
 IRIS_URL=https://iris-tg.ru/api
 IRIS_BOT_ID=ID_бота
 IRIS_TOKEN=Iris-Token
@@ -98,7 +99,6 @@ console.log(`В мешке бота: ${balance.sweets} ирисок, ${balance.g
 
 ```TypeScript
 const config = {
-    IrisVersion:"100" // Версия для работы с Iris API, можно указать 100 для получение актуальной версии
     IrisUrl: "https://iris-tg.ru/api",
     botId: "123456789",
     IrisToken: "123456789:Abv",
@@ -188,14 +188,18 @@ for (const result of ResultSweetsHistory) {
     const TimeString = new Date(date).ToLocaleString();
 
     console.log(
-        `История путишествий ирисок ((${ResultSweetsHistory.length} записей)):\n\n` +
-        `Дата операции: ${TimeString}\n` + 
+        `История путишествий ирисок (${ResultSweetsHistory.length} записей):\n\n` +
+        `Дата операции: ${DateString}\n` +
         `Количество: ${result.amount}\n` +
-        `Исходный баланс: ${result.balance}\n` +
-        `Пользователь: ${result.to_user_id}\n` +
-        `ID операции: ${result.id}\n` + 
-        `Тип операции: ${result.type == "take" ? "получение" : "перевод"}\n` +
-        `Коммисия: ${result.info.commision}`
+        `Новый баланс: ${result.balance}\n` +
+        `Контрагент: ${result.peer_id}\n` +
+        `ID операции: ${result.id}\n` +
+        `Тип операции: ${result.type === "receive" ? "получение" : "отправка"}\n` +
+        `Общая сумма: ${result.details.total}\n` +
+        `Получил контрагент: ${result.details.amount}\n` +
+        `Съедено очков доната: ${result.details.donate_score ?? 0}\n` +
+        `Комиссия: ${result.details.fee ?? 0}\n` +
+        `Комментарий: ${result.comment || "—"}`
     )
 }
 ```
@@ -213,26 +217,68 @@ if (ResultGoldHistory.length === 0) {
 }
 
 for (const result of ResultGoldHistory) {
-    const date = result.date / 1000;
-    const TimeString = new Date(date).ToLocaleString();
+    const DateString = new Date(result.date).ToLocaleString();
 
     console.log(
-        `История путишествий ирисок (${ResultGoldHistory.length} записей):\n\n` +
-        `Дата операции: ${TimeString}\n` + 
+        `История путешествий ирисок (${ResultGoldHistory.length} записей):\n\n` +
+        `Дата операции: ${DateString}\n` +
         `Количество: ${result.amount}\n` +
-        `Исходный баланс: ${result.balance}\n` +
-        `Пользователь: ${result.to_user_id}\n` +
-        `ID операции: ${result.id}\n` + 
-        `Тип операции: ${result.type == "take" ? "получение" : "перевод"}\n` +
-        `Коммисия: ${result.info.commision}`
-    )
+        `Новый баланс: ${result.balance}\n` +
+        `Контрагент: ${result.peer_id}\n` +
+        `ID операции: ${result.id}\n` +
+        `Тип операции: ${result.type === "receive" ? "получение" : "отправка"}\n` +
+        `Общая сумма: ${result.details.total}\n` +
+        `Получил контрагент: ${result.details.amount}\n` +
+        `Съедено очков доната: ${result.details.donate_score ?? 0}\n` +
+        `Комиссия: ${result.details.fee ?? 0}\n` +
+        `Комментарий: ${result.comment || "—"}`
+    );
 }
 ```
 ---
 
+### getUpdates
+Получить логи ирисок и ирис-голд
+
+```TypeScript
+const LogsResult = await client.getUpdates()
+
+if (LogsResult.length == 0) {
+    console.log(`Логи отсутствуют`);
+    return
+}
+
+for (const result of LogsResult) {
+    const DateString = new Date(result.date).toLocaleString();
+    const object = result.object;
+    const ObjectDate = new Date(object.date).toLocaleString()
+
+    console.log(
+        `=== данные логов ===\n\n` + 
+        `ID логов: ${result.id}\n` +
+        `Дата: ${DateString}\n` + 
+        `Логи на: ${result.type == 'sweets_log' ? 'ириски' : 'ирис-голд'}\n` +
+        `=== история логов ===\n\n` +
+        `Дата операции: ${DateString}\n` +
+        `Количество: ${result.amount}\n` +
+        `Новый баланс: ${result.balance}\n` +
+        `Контрагент: ${result.peer_id}\n` +
+        `ID операции: ${result.id}\n` +
+        `Тип операции: ${result.type === "receive" ? "получение" : "отправка"}\n` +
+        `Общая сумма: ${result.details.total}\n` +
+        `Получил контрагент: ${result.details.amount}\n` +
+        `Съедено очков доната: ${result.details.donate_score ?? 0}\n` +
+        `Комиссия: ${result.details.fee ?? 0}\n` +
+        `Комментарий: ${result.comment || "—"}`
+    )
+}
+```
+
+---
+
 ### Обработка ошибок
 
-Все запросы используют функцию `getWithRetry`, которая сразу выбрасывает ошибки.
+Все запросы используют функцию `getWithRetry`, которая выбрасывает ошибки, поэтому необходимо делать через: try-catch
 ---
 
 ### Контакты

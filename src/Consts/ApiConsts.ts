@@ -9,5 +9,6 @@ export enum ApiConstants {
   AllowUser = "pocket/allow_user",
   DenyUser = "pocket/deny_user",
   AllAllow = "pocket/allow_all",
-  AllDeny = "pocket/deny_all"
+  AllDeny = "pocket/deny_all",
+  getUpdates = "getUpdates"
 }

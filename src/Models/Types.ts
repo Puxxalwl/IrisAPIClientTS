@@ -8,20 +8,33 @@ export interface Result {
     result:boolean
 }
 
-
-export interface History {
-    date:number;
-    amount:number;
-    balance:number;
-    to_user_id:number;
-    id:number;
-    type:string;
-    info:Info
+export interface ResultGive {
+    result:number
 }
 
-interface Info {
-    donateScore:number|null
-    sweets:number|null
-    gold:number|null
-    commision:number|null
+export interface HistoryIris {
+  id:number
+  type: "send"| "receive"
+  date:number
+  amount: number
+  balance:number
+  peer_id:number
+  to_user_id: number
+  details: {
+    total:number
+    amount?:number
+    donate_score?: number
+    fee?:number
+  }
+  comment?:string
+  metadata?:undefined
 }
+
+interface Update {
+  id:number
+  type : 'gold_log'|'sweets_log'
+  date:number // UNIX
+  object:HistoryIris
+}
+
+export type UpdateIris = Update[] | []

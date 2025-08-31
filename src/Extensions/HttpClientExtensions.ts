@@ -32,7 +32,7 @@ export class HttpClientExtensions {
     this.client = axios.create(config);
   }
 
-  async getWithRetry<T>(url: string, params?: Record<string, unknown>, maxRetries: number = 3): Promise<T> {
+  async getWithRetry<T>(url: string, errorDescription:string,params?: Record<string, unknown>, maxRetries: number = 3): Promise<T> {
     const queryString = params
       ? "?" + Object.entries(params).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(this.formatValue(v))}`).join("&")
       : "";
@@ -45,9 +45,7 @@ export class HttpClientExtensions {
 
         if (data?.error) {
           const apiError = data as ApiErrorResponse;
-          const error = new Error(apiError.error.description);
-          (error as any).code = apiError.error.code;
-          throw error;
+          throw new Error(`[ ERROR ] ${errorDescription}: [${apiError.error.code}] ${apiError.error.description}`);
         }
 
         if (response.status < 200 || response.status >= 300) {
