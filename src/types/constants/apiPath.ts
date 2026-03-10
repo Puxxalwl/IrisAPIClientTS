@@ -1,4 +1,4 @@
-export enum ApiConstants {
+export enum apiPath {
   GiveSweets = "pocket/sweets/give",
   Balance = "pocket/balance",
   SweetsHistory = "pocket/sweets/history",
