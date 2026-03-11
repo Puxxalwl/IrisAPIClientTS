@@ -1,6 +1,6 @@
 export enum CurrencyType {
-    Sweets = "sweets",
-    Gold = "gold",
-    DonateScore = "donate_score",
-    TgStars = "tgstars"
+    Sweets = "sweets", // Ириски
+    Gold = "gold", // Ирис-голд
+    DonateScore = "donate_score", // Очки доната
+    TgStars = "tgstars" // Telegram stars
 }

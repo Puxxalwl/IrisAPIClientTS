@@ -1,6 +1,9 @@
 import { AxiosInstance, AxiosRequestConfig } from "axios";
+import { IrisLogger } from "../extensions/logger";
 
 export interface IrisAPIConfig {
+    /** API base URL, default: https://iris-tg.ru/api */
+    baseUrl?: string;
     /** Данные бота */
     bot: IrisAPIBot;
     /** Версия апи, default: 0.5 (Крайне не рекомендуется изменять)*/
@@ -13,6 +16,8 @@ export interface IrisAPIConfig {
     proxy?: IrisAPIProxy;
     /** Конфиг retry при ошибках */
     retry?: RetryConfig;
+    /** Настройки встроенного логирования */
+    logging?: IrisAPILoggingConfig;
 
     /** 
     * Свой axios инстанс.
@@ -21,8 +26,21 @@ export interface IrisAPIConfig {
     instance?: AxiosInstance;
 }
 
+export interface IrisAPILoggingConfig {
+    /** Кастомный логгер (по умолчанию используется noopLogger) */
+    logger?: IrisLogger;
+    /** Логировать исходящие запросы */
+    requests?: boolean;
+    /** Логировать успешные ответы */
+    responses?: boolean;
+    /** Логировать retry-попытки */
+    retries?: boolean;
+}
+
 export interface IrisAPIBot {
+    /** ID бота в Iris */
     botId: number;
+    /** Токен бота для доступа к API */
     token: string;
 }
 

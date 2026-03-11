@@ -1,10 +1,10 @@
 export interface ApiError
 {
-    code: number; // код ошибки
-    description: string; // описание
+    code: number; // Код ошибки
+    description: string; // Текстовое описание ошибки
 }
 
 export interface ApiErrorResponse
 {
-    error: ApiError;
+    error: ApiError; // Обертка ошибки в формате Iris API
 }

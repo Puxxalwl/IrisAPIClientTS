@@ -1,15 +1,16 @@
-export type ResponeType =
-    "send" | // Отправлено
-    "send_with" | // Отправлено при ...
-    "receive" | // Получено
-    "receive_with" | // Получено при ...
-    "trade" | // Операции биржы
-    "dividends" | // Дивиденты
-    "trade_sale_order" | //
-    "purchase_tgstars" | // Конвертация тгзв
-    "purchase" | // Обмен на тгзв
-    "sweets_log" | // Логи ирисок
-    "gold_log" | // Логи ирис-голд
-    "tgstars_log" | // Логи тгзв
-    "buy" | // Покупка
-    "sell"; // Продажа
+export type ResponseType =
+    "send" | // Отправка
+    "send_with" | // Отправка со списанием доп. ресурсов
+    "receive" | // Получение
+    "receive_with" | // Получение с доп. условиями
+    "trade" | // Биржевая операция
+    "dividends" | // Дивиденды
+    "trade_sale_order" | // Продажа через ордер
+    "purchase_tgstars" | // Покупка tgstars за ириски
+    "purchase" | // Покупка/обмен
+    "sweets_log" | // Событие лога ирисок
+    "gold_log" | // Событие лога голды
+    "donate_score_log" | // Событие лога очков доната
+    "tgstars_log" | // Событие лога tgstars
+    "buy" | // Покупка в сделках
+    "sell"; // Продажа в сделках

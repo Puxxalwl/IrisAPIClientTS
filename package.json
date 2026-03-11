@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "test": "echo \"No tests specified\""
+    "test": "npm run build && node --test test/**/*.test.js"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
