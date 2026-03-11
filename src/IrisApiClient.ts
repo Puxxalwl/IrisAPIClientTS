@@ -254,7 +254,7 @@ export class IrisApiClient {
         return axios.create(axiosConfig);
     }
 
-    /** Построить конечный URL метода с учетом версии и токена бота. */
+    /** Создание URL */
     private buildUrl(methodPath: string, options: RequestOptions = {}): string {
         const token = `${this.config.bot.botId}_${this.config.bot.token}`;
 
@@ -265,12 +265,12 @@ export class IrisApiClient {
         return `${this.baseUrl}/v${this.config.version}/${token}/${methodPath}`;
     }
 
-    /** Нормализовать базовый URL (убрать завершающий слеш). */
+    /** Нормализовать базовый URL */
     private normalizeBaseUrl(baseUrl: string): string {
         return this.trimTrailingSlash(baseUrl);
     }
 
-    /** Удалить завершающие `/` в URL. */
+    /** Удалить / в URL. */
     private trimTrailingSlash(value: string): string {
         return value.replace(/\/+$/, "");
     }

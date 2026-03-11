@@ -38,7 +38,7 @@ export interface IrisAPILoggingConfig {
 }
 
 export interface IrisAPIBot {
-    /** ID бота в Iris */
+    /** ID бота */
     botId: number;
     /** Токен бота для доступа к API */
     token: string;
