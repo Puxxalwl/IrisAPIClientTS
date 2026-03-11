@@ -8,7 +8,7 @@ export enum apiPath {
   PocketDenyUser = "pocket/deny_user", // Запретить переводы пользователю
   TgStarsBuy = "pocket/tgstars/buy", // Купить tgstars
   TgStarsPrice = "pocket/tgstars/price", // Рассчитать цену tgstars
-  UpdatesGet = "updates/getUpdates", // Получить события логов
+  UpdatesGet = "getUpdates", // Получить события логов
   TradeBuy = "trade/buy", // Покупка голды
   TradeSell = "trade/sell", // Продажа голды
   TradeCancelPrice = "trade/cancel_price", // Отмена заявок по цене
