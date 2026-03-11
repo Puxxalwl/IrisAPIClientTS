@@ -20,7 +20,8 @@ npm install IrisAPIClientTS --version 2.0.0
 
 ## Начало работы
 
-Смотрите в [example/basic-usage/index.ts](https://github.com/Puxxalwl/IrisAPIClientTS/blob/main/example/basic-usage/index.ts)
+Смотрите в [example/basic-usage/index.ts](https://github.com/Puxxalwl/IrisAPIClientTS/blob/main/example/basic-usage/index.ts). \
+Остальную документацию с методами можно найти в [документации от LUKIN](https://github.com/lukinism/iris-api-spec/blob/main/README.md)
 
 ---
 
