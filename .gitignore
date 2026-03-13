@@ -5,4 +5,5 @@ dist/
 
 # Config
 IrisSettings.json
-.env.npmrc
+.env
+.npmrc
