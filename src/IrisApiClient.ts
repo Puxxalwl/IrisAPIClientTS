@@ -23,10 +23,6 @@ import {
 import { apiPath, givePathByCurrency, historyPathByCurrency } from "./types/constants/apiPath";
 import { IrisLogger, noopLogger } from "./extensions/logger";
 
-interface RequestOptions {
-    // Для endpoint'ов, которые вызываются без /v{version}/{botId_token}/
-    skipVersionPath?: boolean;
-}
 
 /**
  * Iris API клиент (v0.5): обертка над HTTP-запросами с retry и типизацией.
@@ -45,7 +41,7 @@ export class IrisApiClient {
         };
 
         this.http = config.instance ?? this.createHttpClient();
-        this.baseUrl = this.normalizeBaseUrl(this.config.baseUrl ?? process.env.IRIS_URL ?? "https://iris-tg.ru/api");
+        this.baseUrl = this.config.baseUrl ?? process.env.IRIS_URL ?? "https://iris-tg.ru/api";
         this.logger = this.config.logging?.logger ?? noopLogger;
     }
 
@@ -218,7 +214,7 @@ export class IrisApiClient {
 
     /** Получить актуальную версию Iris API. */
     public async getLastVersion(): Promise<string> {
-        const result = await this.request<string>(apiPath.LastVersion, undefined, { skipVersionPath: true });
+        const result = await this.request<string>(apiPath.LastVersion, undefined);
         return result.result;
     }
 
@@ -237,10 +233,6 @@ export class IrisApiClient {
         };
 
         if (this.config.proxy?.enabled) {
-            if (this.config.proxy.protocol && this.config.proxy.protocol !== "http" && this.config.proxy.protocol !== "https") {
-                throw new Error("Only http/https proxy protocols are supported by default axios proxy settings.");
-            }
-
             if (this.config.proxy.host && this.config.proxy.port) {
                 axiosConfig.proxy = {
                     protocol: this.config.proxy.protocol ?? "http",
@@ -255,36 +247,22 @@ export class IrisApiClient {
     }
 
     /** Создание URL */
-    private buildUrl(methodPath: string, options: RequestOptions = {}): string {
+    private buildUrl(methodPath: string): string {
         const token = `${this.config.bot.botId}_${this.config.bot.token}`;
-
-        if (options.skipVersionPath) {
-            return `${this.baseUrl}/${methodPath}`;
-        }
-
         return `${this.baseUrl}/v${this.config.version}/${token}/${methodPath}`;
     }
 
-    /** Нормализовать базовый URL */
-    private normalizeBaseUrl(baseUrl: string): string {
-        return this.trimTrailingSlash(baseUrl);
-    }
-
-    /** Удалить / в URL. */
-    private trimTrailingSlash(value: string): string {
-        return value.replace(/\/+$/, "");
-    }
 
     /**
-     * Выполнить GET-запрос к Iris API с retry-политикой.
+     * Выполнить GET-запрос к Iris API.
      * Повторы выполняются для сетевых ошибок и не исключенных статусов.
      */
-    private async request<T>(methodPath: string, params?: Record<string, unknown>, options?: RequestOptions): Promise<Result<T>> {
+    public async request<T>(methodPath: string, params?: Record<string, unknown>): Promise<Result<T>> {
         const retries = this.config.retry?.retries ?? 3;
         const delay = this.config.retry?.delay ?? 500;
         const excludeStatuses = this.config.retry?.excludeStatuses ?? [401, 403];
         const exponential = this.config.retry?.exponential ?? false;
-        const requestUrl = this.buildUrl(methodPath, options);
+        const requestUrl = this.buildUrl(methodPath);
 
         let attempt = 0;
 
