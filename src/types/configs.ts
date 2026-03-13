@@ -48,7 +48,7 @@ export interface IrisAPIProxy {
     /** Включить прокси */
     enabled: boolean;
     /** Протокол, default: "http" */
-    protocol?: "http" | "https" | "socks4" | "socks5";
+    protocol?: "http" | "https";
     /** Хост прокси */
     host?: string;
     /** Порт прокси */
