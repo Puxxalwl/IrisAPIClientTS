@@ -8,7 +8,7 @@
 ## Установка через npm 📦
 
 ```bash
-npm install IrisAPIClientTS@2.0.2
+npm install IrisAPIClientTS@2.0.3
 ```
 ---
 

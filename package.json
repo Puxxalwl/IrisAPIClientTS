@@ -1,6 +1,6 @@
 {
   "name": "irisapiclientts",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Асинхронная библиотека для работы с API Iris | Чат-Менеджер'а в Telegram",
   "keywords": [
     "Iris-API",
