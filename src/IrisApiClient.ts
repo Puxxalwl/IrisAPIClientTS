@@ -47,7 +47,7 @@ export class IrisApiClient {
 
     /** Получить баланс мешка бота. */
     public async getBalance(): Promise<Balance> {
-        const result = await this.request<Balance>(apiPath.Balance);
+        const result = await this.request<Result<Balance>>(apiPath.Balance);
         return result.result;
     }
 
@@ -75,47 +75,47 @@ export class IrisApiClient {
             }
         }
 
-        const result = await this.request<number>(path, payload);
+        const result = await this.request<Result<number>>(path, payload);
         return result.result;
     }
 
     /** Универсально получить историю операций по выбранной валюте. */
     public async getTransactions(currency: CurrencyType, offset = 0, limit = 200): Promise<CurrencyTransaction[]> {
         const path = historyPathByCurrency[currency];
-        const result = await this.request<CurrencyTransaction[]>(path, { offset, limit });
+        const result = await this.request<Result<CurrencyTransaction[]>>(path, { offset, limit });
         return result.result;
     }
 
     /** Купить tgstars за ириски. */
     public async buyTgStars(amount: number): Promise<number> {
-        const result = await this.request<number>(apiPath.TgStarsBuy, { amount });
+        const result = await this.request<Result<number>>(apiPath.TgStarsBuy, { amount });
         return result.result;
     }
 
     /** Оценить стоимость tgstars в ирисках. */
     public async getTgStarsPrice(amount: number): Promise<TgStarsPrice> {
-        const result = await this.request<TgStarsPrice>(apiPath.TgStarsPrice, { amount });
+        const result = await this.request<Result<TgStarsPrice>>(apiPath.TgStarsPrice, { amount });
         return result.result;
     }
 
     /** Открыть или закрыть мешок бота. */
     public async setPocketEnabled(enabled: boolean): Promise<boolean> {
         const path = enabled ? apiPath.PocketEnable : apiPath.PocketDisable;
-        const result = await this.request<boolean>(path);
+        const result = await this.request<Result<boolean>>(path);
         return result.result;
     }
 
     /** Разрешить или запретить переводы всем пользователям. */
     public async setPocketAccessForAll(allowAll: boolean): Promise<boolean> {
         const path = allowAll ? apiPath.PocketAllowAll : apiPath.PocketDenyAll;
-        const result = await this.request<boolean>(path);
+        const result = await this.request<Result<boolean>>(path);
         return result.result;
     }
 
     /** Разрешить или запретить переводы конкретному пользователю. */
     public async setPocketAccessForUser(userId: number, allow: boolean): Promise<boolean | number> {
         const path = allow ? apiPath.PocketAllowUser : apiPath.PocketDenyUser;
-        const result = await this.request<boolean | number>(path, { user_id: userId });
+        const result = await this.request<Result<boolean | number>>(path, { user_id: userId });
         return result.result;
     }
 
@@ -129,50 +129,50 @@ export class IrisApiClient {
             [UserInfoType.Pocket]: apiPath.UserInfoPocket
         };
 
-        const result = await this.request<UserInfoResultMap[T]>(pathMap[type], { user_id: userId });
+        const result = await this.request<Result<UserInfoResultMap[T]>>(pathMap[type], { user_id: userId });
         return result.result;
     }
 
     /** Получить список событий из updates/getUpdates. */
     public async getUpdates(offset = 0, limit = 200): Promise<UpdateEvent[]> {
-        const result = await this.request<UpdateEvent[]>(apiPath.UpdatesGet, { offset, limit });
+        const result = await this.request<Result<UpdateEvent[]>>(apiPath.UpdatesGet, { offset, limit });
         return result.result;
     }
 
     /** Универсальный метод торговли: покупка или продажа голды. */
     public async trade(action: TradeAction, price: number, volume: number): Promise<TradeExecutionResult> {
         const path = action === TradeAction.Buy ? apiPath.TradeBuy : apiPath.TradeSell;
-        const result = await this.request<TradeExecutionResult>(path, { price, volume });
+        const result = await this.request<Result<TradeExecutionResult>>(path, { price, volume });
         return result.result;
     }
 
     /** Отменить заявки по указанной цене. */
     public async cancelTradeByPrice(price: number): Promise<TradeCancelResult> {
-        const result = await this.request<TradeCancelResult>(apiPath.TradeCancelPrice, { price });
+        const result = await this.request<Result<TradeCancelResult>>(apiPath.TradeCancelPrice, { price });
         return result.result;
     }
 
     /** Отменить все открытые заявки. */
     public async cancelAllTrades(): Promise<TradeCancelResult> {
-        const result = await this.request<TradeCancelResult>(apiPath.TradeCancelAll);
+        const result = await this.request<Result<TradeCancelResult>>(apiPath.TradeCancelAll);
         return result.result;
     }
 
     /** Частично отменить заявку по ID и объему. */
     public async cancelTradePart(id: number, volume: number): Promise<TradeCancelResult> {
-        const result = await this.request<TradeCancelResult>(apiPath.TradeCancelPart, { id, volume });
+        const result = await this.request<Result<TradeCancelResult>>(apiPath.TradeCancelPart, { id, volume });
         return result.result;
     }
 
     /** Получить текущий стакан заявок. */
     public async getOrderbook(): Promise<TradeOrderbook> {
-        const result = await this.request<TradeOrderbook>(apiPath.TradeOrderbook);
+        const result = await this.request<Result<TradeOrderbook>>(apiPath.TradeOrderbook);
         return result.result;
     }
 
     /** Получить ленту сделок биржи. */
     public async getDeals(id = 0, limit = 200): Promise<TradeDeal[]> {
-        const result = await this.request<TradeDeal[]>(apiPath.TradeDeals, { id, limit });
+        const result = await this.request<Result<TradeDeal[]>>(apiPath.TradeDeals, { id, limit });
         return result.result;
     }
 
@@ -190,38 +190,38 @@ export class IrisApiClient {
             payload.comment = params.comment;
         }
 
-        const result = await this.request<number>(apiPath.NftGive, payload);
+        const result = await this.request<Result<number>>(apiPath.NftGive, payload);
         return result.result;
     }
 
     /** Получить информацию о NFT по id или name. */
     public async getNftInfo(params: { id?: number; name?: string }): Promise<NftInfo> {
-        const result = await this.request<NftInfo>(apiPath.NftInfo, params);
+        const result = await this.request<Result<NftInfo>>(apiPath.NftInfo, params);
         return result.result;
     }
 
     /** Получить список NFT в мешке бота. */
     public async getNftList(offset = 0, limit = 200): Promise<NftListItem[]> {
-        const result = await this.request<NftListItem[]>(apiPath.NftList, { offset, limit });
+        const result = await this.request<Result<NftListItem[]>>(apiPath.NftList, { offset, limit });
         return result.result;
     }
 
     /** Получить историю операций с NFT. */
     public async getNftHistory(offset = 0, limit = 200): Promise<NftHistoryItem[]> {
-        const result = await this.request<NftHistoryItem[]>(apiPath.NftHistory, { offset, limit });
+        const result = await this.request<Result<NftHistoryItem[]>>(apiPath.NftHistory, { offset, limit });
         return result.result;
     }
 
     /** Получить актуальную версию Iris API. */
     public async getLastVersion(): Promise<string> {
-        const result = await this.request<string>(apiPath.LastVersion, undefined);
+        const result = await this.request<Result<string>>(apiPath.LastVersion);
         return result.result;
     }
 
     /** Получить список Telegram ID аккаунтов агентов Iris. */
     public async getIrisAgents(): Promise<number[]> {
         const result = await this.request<number[]>(apiPath.IrisAgents);
-        return result.result;
+        return result;
     }
 
     /** Создать axios-инстанс с таймаутом/заголовками/прокси. */
@@ -248,7 +248,7 @@ export class IrisApiClient {
     /** Создание URL */
     private buildUrl(methodPath: string): string {
         const token = `${this.config.bot.botId}_${this.config.bot.token}`;
-        return `${this.baseUrl}/v${this.config.version}/${token}/${methodPath}`;
+        return `${this.baseUrl}/${token}/v${this.config.version}/${methodPath}`;
     }
 
 
@@ -256,7 +256,7 @@ export class IrisApiClient {
      * Выполнить GET-запрос к Iris API.
      * Повторы выполняются для сетевых ошибок и не исключенных статусов.
      */
-    public async request<T>(methodPath: string, params?: Record<string, unknown>): Promise<Result<T>> {
+    public async request<T>(methodPath: string, params?: Record<string, unknown>): Promise<T> {
         const retries = this.config.retry?.retries ?? 3;
         const delay = this.config.retry?.delay ?? 500;
         const excludeStatuses = this.config.retry?.excludeStatuses ?? [401, 403];
@@ -276,7 +276,7 @@ export class IrisApiClient {
                     });
                 }
 
-                const response = await this.http.get<Result<T>>(requestUrl, {
+                const response = await this.http.get<T>(requestUrl, {
                     params
                 });
 
