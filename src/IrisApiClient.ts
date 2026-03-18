@@ -220,8 +220,8 @@ export class IrisApiClient {
 
     /** Получить список Telegram ID аккаунтов агентов Iris. */
     public async getIrisAgents(): Promise<number[]> {
-        const result = await this.request<number[]>(apiPath.IrisAgents);
-        return result;
+        const result = await this.request<Result<number[]>>(apiPath.IrisAgents);
+        return result.result;
     }
 
     /** Создать axios-инстанс с таймаутом/заголовками/прокси. */
